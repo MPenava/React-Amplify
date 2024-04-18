@@ -46,7 +46,7 @@ const Login = () => {
         <Toast
           ref={toast}
           pt={{
-            closeButton: { className: "text-white border-1" },
+            closeButton: { className: "text-red border-1" },
           }}
         />
         <div className="flex flex-column gap-5">

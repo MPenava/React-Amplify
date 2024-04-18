@@ -1,29 +1,48 @@
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Toast } from "primereact/toast";
 import { useAuth } from "../../../providers/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AccessCode = () => {
   const navigate = useNavigate();
-  const { handleSignInConfirmation } = useAuth();
+  const { handleSignInConfirmation, currentAuthenticatedUser } = useAuth();
+
   const [code, setCode] = useState<string>("");
+  const toast = useRef<Toast>(null);
 
   const getData = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCode(e.target.value);
   };
+
+  useEffect(() => {
+    currentAuthenticatedUser().then((data) => {
+      data && navigate("/admin");
+    });
+  }, []);
 
   const handleSubmit = async () => {
     try {
       await handleSignInConfirmation(code);
       navigate("/admin");
     } catch (error) {
-      console.log("Error: " + error);
+      toast.current?.show({
+        severity: "error",
+        summary: "Error!",
+        detail: "Oops! Something went wrong.",
+      });
     }
   };
 
   return (
     <div className="flex flex-column w-23rem p-4 gap-4 bg-white border-round-lg shadow-5">
+      <Toast
+        ref={toast}
+        pt={{
+          closeButton: { className: "text-red border-1" },
+        }}
+      />
       <div className="flex flex-column gap-4">
         <div className="flex justify-content-center text-4xl font-normal">
           Enter 6-digit code

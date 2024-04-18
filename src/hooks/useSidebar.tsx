@@ -27,10 +27,6 @@ const actionItems: MenuItem[] = [
     label: "SETTINGS",
     icon: "pi pi-cog",
   },
-  {
-    label: "LOGOUT",
-    icon: "pi pi-sign-out",
-  },
 ];
 
 export { listItems, actionItems };

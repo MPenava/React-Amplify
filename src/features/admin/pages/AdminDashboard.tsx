@@ -54,22 +54,9 @@ const AdminDashboard = () => {
 
   const toast = useRef<Toast>(null);
 
-  const handleClickEvent = () => {
-    toast.current?.show({
-      severity: "success",
-      summary: "Success",
-      detail: "Message Content",
-    });
-  };
-
   const handleLogoutEvent = async () => {
     try {
       await logout();
-      toast.current?.show({
-        severity: "success",
-        summary: "SignOut",
-        detail: "Yasdfasdf",
-      });
       navigate("/login");
     } catch (error) {
       console.log(error);
@@ -91,22 +78,16 @@ const AdminDashboard = () => {
             }}
           />
           <Button
-            icon="pi pi-plus"
-            label="New questionare"
-            severity="secondary"
-            onClick={handleClickEvent}
-          ></Button>
-          <Button
-            icon="pi pi-plus"
-            label="New script"
+            icon="pi pi-sign-out"
+            label="Logout"
             severity="secondary"
             onClick={handleLogoutEvent}
           ></Button>
         </div>
       </div>
 
-      <div className="flex flex-row justify-content-between">
-        <div className="card flex p-4 gap-3 bg-gray-100 border-round-xl">
+      <div className="flex flex-row flex-wrap justify-content-between">
+        <div className="card flex p-4 gap-3 bg-gray-100 border-round-xl m-2">
           <div className="flex align-items-center text-lg font-semibold">
             Completed questionaries
           </div>
@@ -114,7 +95,7 @@ const AdminDashboard = () => {
             145
           </div>
         </div>
-        <div className="card flex p-4 gap-3 bg-gray-100 border-round-xl">
+        <div className="card flex p-4 gap-3 bg-gray-100 border-round-xl m-2">
           <div className="flex align-items-center text-lg font-semibold">
             Not submited questionaries
           </div>
@@ -122,7 +103,7 @@ const AdminDashboard = () => {
             20
           </div>
         </div>
-        <div className="card flex p-4 gap-3 bg-gray-100 border-round-xl">
+        <div className="card flex p-4 gap-3 bg-gray-100 border-round-xl m-2">
           <div className="flex align-items-center text-lg font-semibold">
             Incomplete questionarires
           </div>

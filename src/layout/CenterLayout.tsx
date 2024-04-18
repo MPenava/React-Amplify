@@ -6,7 +6,7 @@ import { AuthContent } from "./components/content";
 const CenterLayout = () => {
   return (
     <div
-      className="w-screen h-screen"
+      className="w-screen h-screen bg-cover bg-no-repeat"
       style={{ background: `url(${mainitobaBackground})` }}
     >
       <div className="w-screen h-20rem flex justify-content-center align-items-center">

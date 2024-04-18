@@ -8,6 +8,7 @@ import {
   getCurrentUser,
   AuthUser,
   fetchDevices,
+  rememberDevice,
 } from "aws-amplify/auth";
 
 type TAuthContext = {
@@ -22,6 +23,7 @@ type TAuthContext = {
   currentAuthenticatedUser: () => Promise<AuthUser | undefined>;
   logout: () => void;
   handleSignInConfirmation: (code: string) => Promise<any>;
+  handleRememberDevice: () => Promise<void>;
   fetchUserDevices: () => Promise<void>;
 };
 
@@ -78,6 +80,7 @@ const AuthContext = ({ children }: TAuthContextProps) => {
   const login = async (username: string, password: string) => {
     try {
       const { isSignedIn } = await signIn({ username, password });
+      handleRememberDevice();
       return isSignedIn;
     } catch (error) {
       throw error;
@@ -98,7 +101,7 @@ const AuthContext = ({ children }: TAuthContextProps) => {
       const { username, userId, signInDetails } = await getCurrentUser();
       return { username, userId, signInDetails };
     } catch (err) {
-      return;
+      return undefined;
     }
   };
 
@@ -107,6 +110,14 @@ const AuthContext = ({ children }: TAuthContextProps) => {
       await signOut();
     } catch (error) {
       console.log("error signing out: ", error);
+    }
+  };
+
+  const handleRememberDevice = async () => {
+    try {
+      await rememberDevice();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -128,6 +139,7 @@ const AuthContext = ({ children }: TAuthContextProps) => {
         currentAuthenticatedUser,
         logout,
         handleSignInConfirmation,
+        handleRememberDevice,
         fetchUserDevices,
       }}
     >
