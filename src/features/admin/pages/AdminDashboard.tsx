@@ -1,7 +1,7 @@
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { Question, Notes } from "../types";
+import { questionaries, notes } from "../hooks";
 
 import { Tag } from "primereact/tag";
 import { Toast } from "primereact/toast";
@@ -15,48 +15,10 @@ const AdminDashboard = () => {
 
   fetchUserDevices();
 
-  const questionaries: Question[] = [
-    {
-      name: "annasmith_q1",
-      date: "Dec-30-2023 10:35",
-    },
-    {
-      name: "annasmith_q1",
-      date: "Dec-30-2023 10:35",
-    },
-    {
-      name: "annasmith_q1",
-      date: "Dec-30-2023 10:35",
-    },
-  ];
-
-  const notes: Notes[] = [
-    {
-      name: "Rusell, Dianne",
-      date: "Dec-30-2023 10:35",
-    },
-    {
-      name: "Rusell, Dianne",
-      date: "Dec-30-2023 10:35",
-    },
-    {
-      name: "Rusell, Dianne",
-      date: "Dec-30-2023 10:35",
-    },
-    {
-      name: "Rusell, Dianne",
-      date: "Dec-30-2023 10:35",
-    },
-    {
-      name: "Rusell, Dianne",
-      date: "Dec-30-2023 10:35",
-    },
-  ];
-
   useEffect(() => {
     try {
       currentAuthenticatedUser().then((data) => {
-        if (data) console.log("Welcome: " + data?.signInDetails?.loginId);
+        if (!data) navigate("/");
       });
     } catch (error) {
       console.log(error);
