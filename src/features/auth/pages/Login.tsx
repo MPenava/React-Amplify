@@ -31,8 +31,8 @@ const Login = () => {
     } catch (error) {
       toast.current?.show({
         severity: "error",
-        summary: "Error...",
-        detail: "Email or password are bad!",
+        summary: "Error!",
+        detail: "Oops! Something went wrong.",
       });
     }
   };

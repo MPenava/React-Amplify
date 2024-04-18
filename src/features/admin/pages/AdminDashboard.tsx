@@ -10,9 +10,11 @@ import { useAuth } from "../../../providers/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
-  const { currentAuthenticatedUser, logout } = useAuth();
-
+  const { currentAuthenticatedUser, logout, fetchUserDevices } = useAuth();
   const navigate = useNavigate();
+
+  fetchUserDevices();
+
   const questionaries: Question[] = [
     {
       name: "annasmith_q1",
@@ -54,7 +56,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     try {
       currentAuthenticatedUser().then((data) => {
-        if (data) alert("Welcome: " + data?.signInDetails?.loginId);
+        if (data) console.log("Welcome: " + data?.signInDetails?.loginId);
       });
     } catch (error) {
       console.log(error);
