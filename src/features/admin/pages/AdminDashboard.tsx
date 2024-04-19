@@ -6,7 +6,7 @@ import { questionaries, notes } from "../hooks";
 import { Tag } from "primereact/tag";
 import { Toast } from "primereact/toast";
 import { useEffect, useRef } from "react";
-import { useAuth } from "../../../providers/context/AuthContext";
+import { useAuth } from "../../../providers/auth/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {

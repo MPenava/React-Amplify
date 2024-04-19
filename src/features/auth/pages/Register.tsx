@@ -1,4 +1,4 @@
-import { useAuth } from "../../../providers/context/AuthContext";
+import { useAuth } from "../../../providers/auth/context/AuthContext";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";

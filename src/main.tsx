@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
+import AuthContext from "./providers/auth/context/AuthContext.tsx";
 
 import { Amplify } from "aws-amplify";
 import { CookieStorage } from "aws-amplify/utils";
@@ -37,7 +38,9 @@ const pt = {
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <PrimeReactProvider value={{ pt }}>
-      <App />
+      <AuthContext>
+        <App />
+      </AuthContext>
     </PrimeReactProvider>
   </React.StrictMode>
 );

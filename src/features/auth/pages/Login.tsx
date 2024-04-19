@@ -5,7 +5,7 @@ import { Toast } from "primereact/toast";
 import { useEffect, useRef, useState } from "react";
 import { TAuthType } from "../types";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../../providers/context/AuthContext";
+import { useAuth } from "../../../providers/auth/context/AuthContext";
 
 const Login = () => {
   const { login, currentAuthenticatedUser } = useAuth();

@@ -11,8 +11,14 @@ const MainLayout = () => {
         objectFit: "cover",
       }}
     >
-      <div className="flex flex-column p-5" style={{ height: "inherit" }}>
-        <div className="flex flex-row gap-5" style={{ height: "inherit" }}>
+      <div
+        className="flex flex-col p-5 h-full w-screen overflow-hidden"
+        style={{ height: "inherit" }}
+      >
+        <div
+          className="flex flex-row gap-5 h-full w-screen overflow-auto"
+          style={{ height: "inherit" }}
+        >
           <Sidebar />
           <Content />
         </div>

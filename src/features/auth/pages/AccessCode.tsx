@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { useEffect, useRef, useState } from "react";
 import { Toast } from "primereact/toast";
-import { useAuth } from "../../../providers/context/AuthContext";
+import { useAuth } from "../../../providers/auth/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const AccessCode = () => {
