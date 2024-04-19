@@ -2,13 +2,13 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Toast } from "primereact/toast";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TAuthType } from "../types";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../providers/context/AuthContext";
 
 const Login = () => {
-  const { login } = useAuth();
+  const { login, currentAuthenticatedUser } = useAuth();
   const navigate = useNavigate();
 
   const [auth, setAuth] = useState<TAuthType>({ email: "", password: "" });
@@ -23,6 +23,16 @@ const Login = () => {
       };
     });
   };
+
+  useEffect(() => {
+    try {
+      currentAuthenticatedUser().then((data) => {
+        if (data) navigate("/admin");
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   const handleSignIn = async () => {
     try {
