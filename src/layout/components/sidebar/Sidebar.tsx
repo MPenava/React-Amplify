@@ -1,5 +1,5 @@
 import { Image } from "primereact/image";
-import imageSrc from "../../../assets/manitoba.png";
+import imageSrc from "@assets/manitoba.png";
 
 import { SidebarList } from "./SidebarList";
 import { SidebarActions } from "./SidebarActions";

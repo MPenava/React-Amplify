@@ -1,6 +1,6 @@
 import { Menu } from "primereact/menu";
 
-import { actionItems } from "../../../hooks";
+import { actionItems } from "@hooks";
 
 const SidebarActions = () => {
   return (

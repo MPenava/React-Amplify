@@ -7,14 +7,11 @@
     "skipLibCheck": true,
     "baseUrl": "./src",
     "paths": {
-      "@api/*": ["api/*"],
       "@assets/*": ["assets/*"],
-      "@i18n": ["i18n"],
-      "@providers": ["providers"],
+      "@hooks": ["hooks"],
       "@routes": ["routes"],
       "@features/*": ["features/*"],
-      "@layout": ["layout"],
-      "@shared/*": ["shared/*"]
+      "@layout": ["layout"]
     },
 
     /* Bundler mode */

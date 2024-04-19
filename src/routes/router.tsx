@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import { MainLayout } from "../layout";
-import { CenterLayout } from "../layout";
+import { MainLayout } from "@layout";
+import { CenterLayout } from "@layout";
 
 import AccessCode from "../features/auth/pages/AccessCode";
 import AdminDashboard from "../features/admin/pages/AdminDashboard";
@@ -12,7 +12,8 @@ import CognitoAuth from "../features/auth/pages/CognitoAuth";
 import Register from "../features/auth/pages/Register";
 import ResetPassword from "../features/auth/pages/ResetPassword";
 
-export const routes = [
+//ts-ignore
+const routes = [
   {
     path: "/",
     element: <CenterLayout />,

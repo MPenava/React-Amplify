@@ -1,6 +1,6 @@
 import { Menu } from "primereact/menu";
 
-import { listItems } from "../../../hooks";
+import { listItems } from "@hooks";
 
 const SidebarList = () => {
   return (
