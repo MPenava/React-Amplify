@@ -57,7 +57,7 @@ const AdminDashboard = () => {
   const handleLogoutEvent = async () => {
     try {
       await logout();
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
