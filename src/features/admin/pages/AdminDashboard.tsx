@@ -7,23 +7,69 @@ import { Tag } from "primereact/tag";
 import { Toast } from "primereact/toast";
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../../providers/auth/context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  setCookie,
+  getCookie,
+  deleteCookie,
+} from "../../../helpers/cookies.helper";
+
+const sha256 = async (str: string): Promise<ArrayBuffer> => {
+  return await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+};
+
+const base64URLEncode = (string: ArrayBuffer): string => {
+  return btoa(String.fromCharCode.apply(null, [...new Uint8Array(string)]))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+};
 
 const AdminDashboard = () => {
-  const { currentAuthenticatedUser, logout, fetchUserDevices } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
-  fetchUserDevices();
+  const location = useLocation();
+  const code = location.search.split("=")[1];
 
   useEffect(() => {
-    try {
-      currentAuthenticatedUser().then((data) => {
-        if (!data) navigate("/");
-      });
-    } catch (error) {
-      console.log(error);
+    if (code) {
+      getAuthTokens();
     }
-  }, []);
+  }, [code]);
+
+  const getAuthTokens = async () => {
+    const code_verifier = getCookie("code_verifier");
+
+    const response = await fetch(
+      `https://mpenava-pool.auth.eu-north-1.amazoncognito.com/oauth2/token`,
+      {
+        method: "POST",
+        headers: new Headers({
+          "content-type": "application/x-www-form-urlencoded",
+        }),
+        body: Object.entries({
+          grant_type: "authorization_code",
+          client_id: import.meta.env.VITE_COGNITO_CLIENT_ID,
+          code: code,
+          code_verifier: code_verifier,
+          redirect_uri: "http%3A%2F%2Flocalhost%3A5173%2Fadmin",
+        })
+          .map(([k, v]) => `${k}=${v}`)
+          .join("&"),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(await response.json());
+    }
+    const tokens = await response.json();
+    if (tokens) {
+      setCookie("access_token", tokens.access_token);
+      setCookie("id_token", tokens.id_token);
+      setCookie("refresh_token", tokens.refresh_token);
+      navigate("/admin");
+    }
+  };
 
   const viewIcon = () => {
     return (
@@ -54,6 +100,25 @@ const AdminDashboard = () => {
 
   const toast = useRef<Toast>(null);
 
+  const handleLogoutPKCE = async () => {
+    const code_verifier = getCookie("code_verifier");
+    if (code_verifier) {
+      const code_challenge = base64URLEncode(await sha256(code_verifier));
+      deleteCookie("code_verifier");
+      deleteCookie("access_token");
+      deleteCookie("id_token");
+      deleteCookie("refresh_token");
+      window.location.replace(
+        "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/logout?response_type=code&client_id=" +
+          import.meta.env.VITE_COGNITO_CLIENT_ID +
+          "&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fadmin&code_challenge=" +
+          code_challenge +
+          "&code_challenge_method=S256"
+      );
+    } else {
+      navigate("/");
+    }
+  };
   const handleLogoutEvent = async () => {
     try {
       await logout();
@@ -77,6 +142,12 @@ const AdminDashboard = () => {
               closeButton: { className: "text-white border-1" },
             }}
           />
+          <Button
+            icon="pi pi-sign-out"
+            label="Logout - PKCE"
+            severity="secondary"
+            onClick={handleLogoutPKCE}
+          ></Button>
           <Button
             icon="pi pi-sign-out"
             label="Logout"
