@@ -1,5 +1,25 @@
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
+import { setCookie } from "../../../helpers/cookies.helper";
+
+const sha256 = async (str: string): Promise<ArrayBuffer> => {
+  return await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+};
+
+const generateNonce = async (): Promise<string> => {
+  const hash = await sha256(
+    crypto.getRandomValues(new Uint32Array(4)).toString()
+  );
+  const hashArray = Array.from(new Uint8Array(hash));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+};
+
+const base64URLEncode = (string: ArrayBuffer): string => {
+  return btoa(String.fromCharCode.apply(null, [...new Uint8Array(string)]))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+};
 
 const CognitoAuth = () => {
   const navigate = useNavigate();
@@ -12,9 +32,16 @@ const CognitoAuth = () => {
     window.location.replace(import.meta.env.VITE_COGNITO_LOGIN_URL);
   };
 
-  const handleHostedUIWithPKCE = () => {
+  const handleHostedUIWithPKCE = async () => {
+    const code_verifier = await generateNonce();
+    const code_challenge = base64URLEncode(await sha256(code_verifier));
+    setCookie("code_verifier", code_verifier);
     window.location.replace(
-      "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/oauth2/authorize?response_type=code&client_id=29affca9kq64nt68hn8s8bn2jt&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fadmin&response_type=code&code_challenge=Eh0mg-OZv7BAyo-tdv_vYamx1boOYDulDklyXoMDtLg&code_challenge_method=S256"
+      "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/login?response_type=code&client_id=" +
+        import.meta.env.VITE_COGNITO_CLIENT_ID +
+        "&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fadmin&code_challenge=" +
+        code_challenge +
+        "&code_challenge_method=S256"
     );
   };
 

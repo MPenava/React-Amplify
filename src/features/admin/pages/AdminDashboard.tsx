@@ -8,19 +8,14 @@ import { Toast } from "primereact/toast";
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../../providers/auth/context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CookieStorage } from "aws-amplify/utils";
-import { setCookie } from "../../../helpers/cookies.helper";
+import {
+  setCookie,
+  getCookie,
+  deleteCookie,
+} from "../../../helpers/cookies.helper";
 
 const sha256 = async (str: string): Promise<ArrayBuffer> => {
   return await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-};
-
-const generateNonce = async (): Promise<string> => {
-  const hash = await sha256(
-    crypto.getRandomValues(new Uint32Array(4)).toString()
-  );
-  const hashArray = Array.from(new Uint8Array(hash));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 };
 
 const base64URLEncode = (string: ArrayBuffer): string => {
@@ -31,39 +26,20 @@ const base64URLEncode = (string: ArrayBuffer): string => {
 };
 
 const AdminDashboard = () => {
-  const { currentAuthenticatedUser, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const location = useLocation();
   const code = location.search.split("=")[1];
 
   useEffect(() => {
-    /* try {
-      currentAuthenticatedUser().then((data) => {
-        if (!data) navigate("/");
-      });
-    } catch (error) {
-      console.log(error);
-    } */
-  }, []);
+    if (code) {
+      getAuthTokens();
+    }
+  }, [code]);
 
-  const onClickEvent1 = async () => {
-    const code_verifier = await generateNonce();
-    window.sessionStorage.setItem("codeVerifier", code_verifier);
-    const code_challenge = base64URLEncode(await sha256(code_verifier));
-    console.log("Code challenge: " + code_challenge);
-    console.log("Code verifier: " + code_verifier);
-    window.location.replace(
-      "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/login?response_type=code&client_id=" +
-        import.meta.env.VITE_COGNITO_CLIENT_ID +
-        "&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fadmin&code_challenge=" +
-        code_challenge +
-        "&code_challenge_method=S256"
-    );
-  };
-
-  const onClickEvent2 = async () => {
-    const code_verifier = window.sessionStorage.getItem("codeVerifier");
+  const getAuthTokens = async () => {
+    const code_verifier = getCookie("code_verifier");
 
     const response = await fetch(
       `https://mpenava-pool.auth.eu-north-1.amazoncognito.com/oauth2/token`,
@@ -91,6 +67,7 @@ const AdminDashboard = () => {
       setCookie("access_token", tokens.access_token);
       setCookie("id_token", tokens.id_token);
       setCookie("refresh_token", tokens.refresh_token);
+      navigate("/admin");
     }
   };
 
@@ -123,6 +100,25 @@ const AdminDashboard = () => {
 
   const toast = useRef<Toast>(null);
 
+  const handleLogoutPKCE = async () => {
+    const code_verifier = getCookie("code_verifier");
+    if (code_verifier) {
+      const code_challenge = base64URLEncode(await sha256(code_verifier));
+      deleteCookie("code_verifier");
+      deleteCookie("access_token");
+      deleteCookie("id_token");
+      deleteCookie("refresh_token");
+      window.location.replace(
+        "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/logout?response_type=code&client_id=" +
+          import.meta.env.VITE_COGNITO_CLIENT_ID +
+          "&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fadmin&code_challenge=" +
+          code_challenge +
+          "&code_challenge_method=S256"
+      );
+    } else {
+      navigate("/");
+    }
+  };
   const handleLogoutEvent = async () => {
     try {
       await logout();
@@ -147,16 +143,10 @@ const AdminDashboard = () => {
             }}
           />
           <Button
-            icon="pi pi-arrow-up"
-            label="Open form"
+            icon="pi pi-sign-out"
+            label="Logout - PKCE"
             severity="secondary"
-            onClick={onClickEvent1}
-          ></Button>
-          <Button
-            icon="pi pi-arrow-down"
-            label="Get tokens"
-            severity="secondary"
-            onClick={onClickEvent2}
+            onClick={handleLogoutPKCE}
           ></Button>
           <Button
             icon="pi pi-sign-out"
