@@ -8,24 +8,34 @@ import { Toast } from "primereact/toast";
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../../providers/auth/context/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
-import crypto from "crypto-js";
+import { CookieStorage } from "aws-amplify/utils";
+import { setCookie } from "../../../helpers/cookies.helper";
+
+const sha256 = async (str: string): Promise<ArrayBuffer> => {
+  return await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+};
+
+const generateNonce = async (): Promise<string> => {
+  const hash = await sha256(
+    crypto.getRandomValues(new Uint32Array(4)).toString()
+  );
+  const hashArray = Array.from(new Uint8Array(hash));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+};
+
+const base64URLEncode = (string: ArrayBuffer): string => {
+  return btoa(String.fromCharCode.apply(null, [...new Uint8Array(string)]))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+};
 
 const AdminDashboard = () => {
-  const { currentAuthenticatedUser, logout, fetchUserDevices } = useAuth();
+  const { currentAuthenticatedUser, logout } = useAuth();
   const navigate = useNavigate();
 
   const location = useLocation();
   const code = location.search.split("=")[1];
-
-  const code_verifier = crypto.SHA256((123).toString());
-  console.log(code_verifier.toString());
-  const code_challenge = crypto.enc.Base64.stringify(
-    crypto.enc.Utf8.parse(code_verifier.toString())
-  );
-  console.log(code_challenge);
-
-  fetchUserDevices();
 
   useEffect(() => {
     /* try {
@@ -37,37 +47,51 @@ const AdminDashboard = () => {
     } */
   }, []);
 
-  const onClickEvent1 = () => {
+  const onClickEvent1 = async () => {
+    const code_verifier = await generateNonce();
+    window.sessionStorage.setItem("codeVerifier", code_verifier);
+    const code_challenge = base64URLEncode(await sha256(code_verifier));
+    console.log("Code challenge: " + code_challenge);
+    console.log("Code verifier: " + code_verifier);
     window.location.replace(
-      "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/oauth2/authorize?response_type=code&client_id=29affca9kq64nt68hn8s8bn2jt&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fadmin&code_challenge=OUhRMt_LTq02o_DgXySVsBSkPcM_5gO7t9gzCoVX-9I&code_challenge_method=S256"
+      "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/login?response_type=code&client_id=" +
+        import.meta.env.VITE_COGNITO_CLIENT_ID +
+        "&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fadmin&code_challenge=" +
+        code_challenge +
+        "&code_challenge_method=S256"
     );
   };
 
   const onClickEvent2 = async () => {
-    const url =
-      "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/oauth2/token";
-    const data = new URLSearchParams();
-    data.append("redirect_uri", "http%3A%2F%2Flocalhost%3A5173%2Fadmin");
-    data.append("client_id", "29affca9kq64nt68hn8s8bn2jt");
-    data.append("code", code);
-    data.append("grant_type", "authorization_code");
-    data.append(
-      "code_verifier",
-      "DgUEbqOlmDRMFhvpdplmwpMLvhmHFXuHhM8ARa8H5bw5HV82VCF1WpYnJ8XcKS9DlMF2EklqrM9nlUKRgvdtMGlwD3pVI0RsFa4WTImRKVJ7tX2AgRECBX7Kon6oldzI"
-    );
+    const code_verifier = window.sessionStorage.getItem("codeVerifier");
 
-    await axios
-      .post(url, data, {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    const response = await fetch(
+      `https://mpenava-pool.auth.eu-north-1.amazoncognito.com/oauth2/token`,
+      {
+        method: "POST",
+        headers: new Headers({
+          "content-type": "application/x-www-form-urlencoded",
+        }),
+        body: Object.entries({
+          grant_type: "authorization_code",
+          client_id: import.meta.env.VITE_COGNITO_CLIENT_ID,
+          code: code,
+          code_verifier: code_verifier,
+          redirect_uri: "http%3A%2F%2Flocalhost%3A5173%2Fadmin",
+        })
+          .map(([k, v]) => `${k}=${v}`)
+          .join("&"),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(await response.json());
+    }
+    const tokens = await response.json();
+    if (tokens) {
+      setCookie("access_token", tokens.access_token);
+      setCookie("id_token", tokens.id_token);
+      setCookie("refresh_token", tokens.refresh_token);
+    }
   };
 
   const viewIcon = () => {
