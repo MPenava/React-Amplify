@@ -10,7 +10,6 @@ const Register = () => {
   const { register } = useAuth();
 
   const [isConfVisible, setConfVisible] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>("");
 
   const [auth, setAuth] = useState<TAuthRegisterType>({
     email: "",
@@ -34,7 +33,6 @@ const Register = () => {
       const result = register(username, auth.password, auth.email, auth.phone);
       if (result) {
         setConfVisible(true);
-        setEmail(result);
       }
     } catch (error: any) {
       console.error("Login failed:", error.message);
@@ -112,7 +110,7 @@ const Register = () => {
           </div>
         </div>
       )}
-      {isConfVisible && <AccessCode email={email} />}
+      {isConfVisible && <AccessCode />}
     </>
   );
 };
