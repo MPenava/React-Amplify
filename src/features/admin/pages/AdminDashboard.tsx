@@ -7,23 +7,68 @@ import { Tag } from "primereact/tag";
 import { Toast } from "primereact/toast";
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../../providers/auth/context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import crypto from "crypto-js";
 
 const AdminDashboard = () => {
   const { currentAuthenticatedUser, logout, fetchUserDevices } = useAuth();
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const code = location.search.split("=")[1];
+
+  const code_verifier = crypto.SHA256((123).toString());
+  console.log(code_verifier.toString());
+  const code_challenge = crypto.enc.Base64.stringify(
+    crypto.enc.Utf8.parse(code_verifier.toString())
+  );
+  console.log(code_challenge);
+
   fetchUserDevices();
 
   useEffect(() => {
-    try {
+    /* try {
       currentAuthenticatedUser().then((data) => {
         if (!data) navigate("/");
       });
     } catch (error) {
       console.log(error);
-    }
+    } */
   }, []);
+
+  const onClickEvent1 = () => {
+    window.location.replace(
+      "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/oauth2/authorize?response_type=code&client_id=29affca9kq64nt68hn8s8bn2jt&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fadmin&code_challenge=OUhRMt_LTq02o_DgXySVsBSkPcM_5gO7t9gzCoVX-9I&code_challenge_method=S256"
+    );
+  };
+
+  const onClickEvent2 = async () => {
+    const url =
+      "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/oauth2/token";
+    const data = new URLSearchParams();
+    data.append("redirect_uri", "http%3A%2F%2Flocalhost%3A5173%2Fadmin");
+    data.append("client_id", "29affca9kq64nt68hn8s8bn2jt");
+    data.append("code", code);
+    data.append("grant_type", "authorization_code");
+    data.append(
+      "code_verifier",
+      "DgUEbqOlmDRMFhvpdplmwpMLvhmHFXuHhM8ARa8H5bw5HV82VCF1WpYnJ8XcKS9DlMF2EklqrM9nlUKRgvdtMGlwD3pVI0RsFa4WTImRKVJ7tX2AgRECBX7Kon6oldzI"
+    );
+
+    await axios
+      .post(url, data, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const viewIcon = () => {
     return (
@@ -77,6 +122,18 @@ const AdminDashboard = () => {
               closeButton: { className: "text-white border-1" },
             }}
           />
+          <Button
+            icon="pi pi-arrow-up"
+            label="Open form"
+            severity="secondary"
+            onClick={onClickEvent1}
+          ></Button>
+          <Button
+            icon="pi pi-arrow-down"
+            label="Get tokens"
+            severity="secondary"
+            onClick={onClickEvent2}
+          ></Button>
           <Button
             icon="pi pi-sign-out"
             label="Logout"

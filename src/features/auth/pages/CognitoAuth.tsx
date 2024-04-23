@@ -12,6 +12,12 @@ const CognitoAuth = () => {
     window.location.replace(import.meta.env.VITE_COGNITO_LOGIN_URL);
   };
 
+  const handleHostedUIWithPKCE = () => {
+    window.location.replace(
+      "https://mpenava-pool.auth.eu-north-1.amazoncognito.com/oauth2/authorize?response_type=code&client_id=29affca9kq64nt68hn8s8bn2jt&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fadmin&response_type=code&code_challenge=Eh0mg-OZv7BAyo-tdv_vYamx1boOYDulDklyXoMDtLg&code_challenge_method=S256"
+    );
+  };
+
   const handleLoginForm = () => {
     navigate("/login");
   };
@@ -36,6 +42,14 @@ const CognitoAuth = () => {
             onClick={handleHostedUIForm}
             pt={{
               root: { className: "p-2 w-full bg-green-500 border-round-sm" },
+            }}
+          ></Button>
+          <Button
+            label="Hosted UI with PKCE"
+            severity="secondary"
+            onClick={handleHostedUIWithPKCE}
+            pt={{
+              root: { className: "p-2 w-full bg-yellow-300 border-round-sm" },
             }}
           ></Button>
           <Button
