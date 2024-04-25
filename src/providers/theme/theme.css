@@ -1,5 +1,5 @@
 :root {
-  font-family: "Roboto", sans-serif;
+  font-family: "Vollkorn SC";
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   font-variation-settings: normal;
   --font-family: "Inter var", sans-serif;
@@ -77,7 +77,7 @@
   --blue-600: #326fd1;
   --blue-700: #295bac;
   --blue-800: #204887;
-  --blue-900: #183462;
+  --blue-900: #053547;
   --green-100: #e3f3db;
   --green-200: #c7e7b7;
   --green-300: #acdb94;

@@ -1,11 +1,11 @@
 import { Image } from "primereact/image";
-import imageSrc from "@assets/manitoba.png";
+import imageSrc from "@assets/scribe4all.svg";
 
 import { SidebarList } from "./SidebarList";
 import { SidebarActions } from "./SidebarActions";
 const Sidebar = () => {
   return (
-    <div className="shadow-5 flex flex-column align-content-between px-3 pt-6 pb-3 h-full w-15rem bg-gray-100 border-round-xl gap-5 overflow-y">
+    <div className="flex flex-column align-content-between px-3 pt-6 pb-3 h-full w-15rem bg-gray-100 border-round-xl shadow-2 gap-5">
       <div className="flex justify-content-center align-items-center">
         <div className="flex flex-column p-2">
           <div className="flex justify-content-center">

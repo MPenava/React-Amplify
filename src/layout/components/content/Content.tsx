@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 const Content = () => {
   return (
-    <div className="shadow-5 flex flex-column h-full w-full overflow-auto bg-white border-round-xl px-5 py-5 overflow-auto">
+    <div className="flex flex-column h-full w-full bg-white border-round-xl shadow-2 px-5 py-5 overflow-auto">
       <Outlet />
     </div>
   );

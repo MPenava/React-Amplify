@@ -2,7 +2,9 @@ import { Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { MainLayout } from "@layout";
+import { FullScreenLayout } from "@layout";
 import { CenterLayout } from "@layout";
+import { ScreenSaverLayout } from "@layout";
 
 import AccessCode from "../features/auth/pages/AccessCode";
 import AdminDashboard from "../features/admin/pages/AdminDashboard";
@@ -71,6 +73,26 @@ const routes = [
       {
         path: "",
         element: <AdminDashboard />,
+      },
+    ],
+  },
+  {
+    path: "/questionnaires",
+    element: <FullScreenLayout />,
+    children: [
+      {
+        path: "",
+        element: <AdminDashboard />,
+      },
+    ],
+  },
+  {
+    path: "/screen-saver",
+    element: <ScreenSaverLayout />,
+    children: [
+      {
+        path: "",
+        element: <Login />,
       },
     ],
   },

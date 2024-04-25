@@ -1,6 +1,6 @@
 import { Image } from "primereact/image";
-import imageSrc from "@assets/manitoba.png";
-import mainitobaBackground from "@assets/manitoba_background.png";
+import imageSrc from "@assets/scribe4all.svg";
+import mainitobaBackground from "@assets/scribe4all_background.svg";
 import { AuthContent } from "./components/content";
 
 const CenterLayout = () => {

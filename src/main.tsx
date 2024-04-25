@@ -7,7 +7,8 @@ import { Amplify } from "aws-amplify";
 import { CookieStorage } from "aws-amplify/utils";
 import { cognitoUserPoolsTokenProvider } from "aws-amplify/auth/cognito";
 
-import "primereact/resources/themes/lara-light-cyan/theme.css";
+//import "primereact/resources/themes/lara-light-cyan/theme.css";
+import "./providers/theme/theme.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 import { PrimeReactProvider } from "primereact/api";
