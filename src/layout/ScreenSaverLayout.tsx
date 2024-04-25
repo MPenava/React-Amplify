@@ -1,9 +1,10 @@
 import imageSrc from "@assets/scribe4all.svg";
 import { Image } from "primereact/image";
+import { Outlet } from "react-router-dom";
 
 const ScreenSaverLayout = () => {
   return (
-    <div className="flex flex-column w-screen h-screen gap-4 bg-blue-900">
+    <div className="flex flex-column w-screen h-screen gap-4 bg-blue-900 overflow-y-auto">
       <div className="flex flex-row gap-4 p-6">
         <div className="flex justify-content-center">
           <Image
@@ -20,7 +21,9 @@ const ScreenSaverLayout = () => {
           </p>
         </div>
       </div>
-      <div className="w-full">{/* Content */}</div>
+      <div className="flex flex-row justify-content-center w-full">
+        <Outlet />
+      </div>
     </div>
   );
 };
