@@ -11,7 +11,7 @@ const MainLayout = () => {
       }}
     >
       <div className="flex p-5 w-screen" style={{ height: "inherit" }}>
-        <div className="flex flex-row gap-5 h-full w-screen">
+        <div className="flex flex-row gap-5 h-full w-screen overflow-auto">
           <Sidebar />
           <Content />
         </div>
